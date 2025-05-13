@@ -11,18 +11,18 @@ jobs:
       - checkout
       - run: ./mvnw -Dmaven.test.skip=true clean package
       - persist_to_workspace:
-         root: ./
-         paths:
-           - target/
-     # - setup_remote_docker:
-     #     version: 19.03.13
-
+          root: ./
+          paths:
+            - target/
+      - setup_remote_docker
       # build and push Docker image
-      - run: |
-          TAG=3.0
-          docker build -t $DOCKERHUB_USERNAME/gitops-foundations:$TAG --build-arg JAR_FILE=*.jar .
-          echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
-          docker push $DOCKERHUB_USERNAME/gitops-foundations:$TAG
+      - run:
+          name: Build and push Docker image
+          command: |
+            TAG=3.0
+            docker build -t $DOCKERHUB_USERNAME/gitops-foundations:$TAG --build-arg JAR_FILE=*.jar .
+            echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
+            docker push $DOCKERHUB_USERNAME/gitops-foundations:$TAG
 workflows:
   main:
     jobs:
